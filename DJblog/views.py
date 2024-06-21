@@ -11,7 +11,8 @@ def post_list(request):
 
 def post_detail(request,post_id):
     post = Post.objects.get(id=post_id)
-    return render(request,'post_detail.html',{'post':post})
+    comments = Comment.objects.filter(post=post)
+    return render(request,'post_detail.html',{'post':post,'comments':comments})
 
 
 def post_new(request):

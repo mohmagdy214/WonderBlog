@@ -4,4 +4,8 @@
 <h1>{{post.drafted}}<h1>
 <h1>{{post.tags}}<h1>
 <h1>{{post.created_at}}<h1>
+
+    {% for comment in comments %}
+<h1>{{comment}}<h1>
+    {% endfor %}
 <img src="{{post.image.url}}" enctype='multipart/form-data'>
