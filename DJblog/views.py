@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Post , Comment
-from .forms import PostForm
+from .forms import PostForm , CommentForm
 
 # Create your views here.
 
@@ -11,8 +11,17 @@ def post_list(request):
 
 def post_detail(request,post_id):
     post = Post.objects.get(id=post_id)
-    comments = Comment.objects.filter(post=post)
-    return render(request,'post_detail.html',{'post':post,'comments':comments})
+    post_comments = Comment.objects.filter(post=post)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            myform = form.save(commit=False)
+            myform.comment_writer = request.user
+            myform.post = post
+            myform = form.save()
+    else:
+        form = CommentForm()
+    return render(request,'post_detail.html',{'post':post,'post_comments':post_comments,'form':form})
 
 
 def post_new(request):
