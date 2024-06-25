@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import post_list , post_detail , post_new , post_edit , post_delete
+from .views import PostList , post_detail , post_new , post_edit , post_delete
 
 urlpatterns = [
-    path('',post_list),
+    path('',PostList.as_view()),
     path('<int:post_id>',post_detail),
     path('new',post_new),
     path('<int:post_id>/edit',post_edit),

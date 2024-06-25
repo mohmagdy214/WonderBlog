@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from .models import Post , Comment
 from .forms import PostForm , CommentForm
+from django.views.generic import ListView 
 
 # Create your views here.
 
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request,'post_list.html',{'posts':posts})
+# def post_list(request):
+#     posts = Post.objects.all()
+#     return render(request,'post_list.html',{'posts':posts})
+
+class PostList(ListView):
+    model = Post
+    template_name = "post_list.html"
 
 
 def post_detail(request,post_id):
@@ -19,6 +24,7 @@ def post_detail(request,post_id):
             myform.comment_writer = request.user
             myform.post = post
             myform = form.save()
+            form = CommentForm()
     else:
         form = CommentForm()
     return render(request,'post_detail.html',{'post':post,'post_comments':post_comments,'form':form})
