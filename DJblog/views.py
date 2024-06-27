@@ -38,9 +38,9 @@ def post_new(request):
             myform.writer = request.user
             myform = form.save()
             form = PostForm()
+        return redirect('/DJblog/')
     else:
         form = PostForm()
-        
     return render(request,'post_new.html',{'form':form})
 
 
@@ -53,6 +53,7 @@ def post_edit(request,post_id):
             myform.writer = request.user
             myform = form.save()
             form = PostForm()
+        return redirect('/DJblog/')
     else:
         form = PostForm(instance=data)
     return render(request,'post_edit.html',{'form':form})
