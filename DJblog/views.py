@@ -63,3 +63,26 @@ def post_delete(request,post_id):
     post = Post.objects.get(id=post_id)
     post.delete()
     return redirect('/DJblog/')
+
+
+def comment_edit(request,comment_id,post_id):
+    data = Post.objects.get(id=post_id)
+    comment_data = Comment.objects.get(id=comment_id,post=data)
+    if request.method == 'POST':
+        form = CommentForm(request.POST,request.FILES,instance=comment_data)
+        if form.is_valid():
+            myform = form.save(commit=False)
+            myform.writer = request.user
+            myform = form.save()
+            form = CommentForm()
+        return redirect ('/DJblog/')
+    else:
+        form = CommentForm(instance=comment_data)
+    return render(request,'post_detail.html',{'form':form})
+
+
+def comment_delete(request,post_id,comment_id):
+    post = Post.objects.get(id=post_id)
+    comment = Comment.objects.get(id=comment_id,post=post)
+    comment.delete()
+    return redirect('/DJblog/')
