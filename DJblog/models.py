@@ -2,6 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from taggit.managers import TaggableManager
+from utils.generate_code import generate_code
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -26,3 +29,22 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.post)
+    
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, related_name='profile_user', on_delete=models.CASCADE)
+    email = models.EmailField(max_length=254, null=True, blank=True)
+    code = models.CharField(max_length=10, default=generate_code)
+
+    def __str__(self):
+        return str(self.user)
+
+
+    @receiver(post_save, sender = User)
+    def create_profile(sender, instance, created, **kwargs):
+        if created :
+            Profile.objects.create (
+                user = instance 
+            )
+

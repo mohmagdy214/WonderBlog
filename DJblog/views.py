@@ -1,17 +1,54 @@
 from django.shortcuts import render, redirect
-from .models import Post , Comment
-from .forms import PostForm , CommentForm
+from .models import Post , Comment , Profile
+from .forms import PostForm , CommentForm , UserRegistrationForm , LoginForm
 from django.views.generic import ListView 
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save(commit=False)
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.save()
+            return redirect('/DJblog/login/')  # Replace 'login' with the name of your login URL
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'DJblog/register.html', {'form': form})
+
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(request, username=cd['username'], password=cd['password'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect('/DJblog/')  # Replace 'home' with the name of your home URL
+                else:
+                    return render(request, 'DJblog/login.html', {'form': form, 'error': 'Disabled account'})
+            else:
+                return render(request, 'DJblog/login.html', {'form': form, 'error': 'Invalid login'})
+    else:
+        form = LoginForm()
+    return render(request, 'DJblog/login.html', {'form': form})
+
 
 # Create your views here.
 
-# def post_list(request):
-#     posts = Post.objects.all()
-#     return render(request,'post_list.html',{'posts':posts})
+def post_list(request):
+    posts = Post.objects.all()
+    return render(request,'DJblog/post_list.html',{'posts':posts})
 
-class PostList(ListView):
-    model = Post
-    template_name = "post_list.html"
+
+# class PostList(ListView):
+#     model = Post
+#     template_name = "post_list.html"
 
 
 def post_detail(request,post_id):
@@ -24,10 +61,9 @@ def post_detail(request,post_id):
             myform.comment_writer = request.user
             myform.post = post
             myform = form.save()
-            form = CommentForm()
     else:
         form = CommentForm()
-    return render(request,'post_detail.html',{'post':post,'post_comments':post_comments,'form':form})
+    return render(request,'DJblog/post_detail.html',{'post':post,'post_comments':post_comments,'form':form})
 
 
 def post_new(request):
@@ -37,11 +73,10 @@ def post_new(request):
             myform = form.save(commit=False)
             myform.writer = request.user
             myform = form.save()
-            form = PostForm()
-        return redirect('/DJblog/')
+            return redirect('/DJblog/')
     else:
         form = PostForm()
-    return render(request,'post_new.html',{'form':form})
+    return render(request,'DJblog/post_new.html',{'form':form})
 
 
 def post_edit(request,post_id):
@@ -52,11 +87,10 @@ def post_edit(request,post_id):
             myform = form.save(commit=False)
             myform.writer = request.user
             myform = form.save()
-            form = PostForm()
-        return redirect('/DJblog/')
+            # return redirect('/DJblog/')
     else:
         form = PostForm(instance=data)
-    return render(request,'post_edit.html',{'form':form})
+    return render(request,'DJblog/post_edit.html',{'form':form})
 
 
 def post_delete(request,post_id):
@@ -75,10 +109,10 @@ def comment_edit(request,comment_id,post_id):
             myform.writer = request.user
             myform = form.save()
             form = CommentForm()
-        return redirect ('/DJblog/')
+            return redirect ('/DJblog/')
     else:
         form = CommentForm(instance=comment_data)
-    return render(request,'post_detail.html',{'form':form})
+    return render(request,'DJblog/post_detail.html',{'form':form})
 
 
 def comment_delete(request,post_id,comment_id):

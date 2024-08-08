@@ -8,17 +8,20 @@
   </head>
   <body>
     <nav class="navbar bg-body-secondary">
-        <div class="container-fluid">
-          <a href='/DJblog/' class="navbar-brand">Wonder</a>
-          <form class="d-flex" role="search">
-            <a href='/DJblog/new' class="btn btn-outline-success">Add New Post</a>
-          </form>
-        </div>
-      </nav>
+      <div class="container-fluid">
+        <a href='/DJblog/' class="navbar-brand">Wonder</a>
+        <a href="{% url 'register' %}">Sign Up</a>
+        <a href="{% url 'login' %}">Log In</a>
+        <form class="d-flex" role="search">
+          <a href='/DJblog/new' class="btn btn-outline-success">Add New Post</a>
+        </form>
+      </div>
+    </nav>
+    <p>Logged in by |{{user}}|</p>
       
       <div class='container-fluid'>
         <div class='row  d-flex justify-content-center'>
-            {% for post in post_list %}
+            {% for post in posts %}
                 <div class="card col-lg-3 m-3">
                     <img src={{post.image.url}} style="width:355px;height:300px">
                     <div class="card-body">
