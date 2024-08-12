@@ -1,49 +1,36 @@
 from django.shortcuts import render, redirect
-from .models import Post , Comment , Profile
-from .forms import PostForm , CommentForm , UserRegistrationForm , LoginForm
-from django.views.generic import ListView 
-from django.contrib.auth import authenticate, login
+from .models import Post , Comment 
+from .forms import PostForm , CommentForm , RegisterForm 
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 
 
-def register(request):
+
+
+def sign_up(request):
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            new_user = form.save(commit=False)
-            new_user.set_password(form.cleaned_data['password'])
-            new_user.save()
-            return redirect('/DJblog/login/')  # Replace 'login' with the name of your login URL
+            user = form.save()
+            login(request, user)
+            return redirect('/login')
     else:
-        form = UserRegistrationForm()
-    return render(request, 'DJblog/register.html', {'form': form})
+        form = RegisterForm()
+    return render(request, 'registration/sign_up.html', {'form':form})
 
 
 
-def user_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request, username=cd['username'], password=cd['password'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('/DJblog/')  # Replace 'home' with the name of your home URL
-                else:
-                    return render(request, 'DJblog/login.html', {'form': form, 'error': 'Disabled account'})
-            else:
-                return render(request, 'DJblog/login.html', {'form': form, 'error': 'Invalid login'})
-    else:
-        form = LoginForm()
-    return render(request, 'DJblog/login.html', {'form': form})
-
-
-# Create your views here.
-
+@login_required(login_url='/login')
 def post_list(request):
     posts = Post.objects.all()
-    return render(request,'DJblog/post_list.html',{'posts':posts})
+    return render(request, 'DJblog/post_list.html', {'posts':posts})
+
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('/login')
+
 
 
 # class PostList(ListView):

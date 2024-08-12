@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import post_list , post_detail , post_new , post_edit , post_delete , comment_edit , comment_delete, register, user_login
+from .views import post_list , post_detail , post_new , post_edit , post_delete , comment_edit , comment_delete, sign_up, logoutUser
 
 urlpatterns = [
-    path('register/', register, name='register'),
-    path('login/', user_login, name='login'),
+    path('sign_up/', sign_up, name='sign_up'),
+    path('logout/', logoutUser, name='logout'),
     path('', post_list),
     path('<int:post_id>',post_detail),
     path('new',post_new),
