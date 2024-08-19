@@ -44,6 +44,7 @@
         <h1 class="d-flex justify-content-start font-monospace">Comments</h1>
         <hr>
         <ul>
+          {% if post_comments %}
         {% for comment in post_comments %}
             <li>
                 <p>"{{comment.comment}}" ({{comment.comment_writer}} - |{{comment.created_at}}|)
@@ -52,6 +53,9 @@
                 </p>
             </li>
         {% endfor %}
+        {% else %}
+        <strong>there is no comments yet</strong>
+        {% endif %}
         </ul>
         <hr>
         <h4>Add New Comment</h4>

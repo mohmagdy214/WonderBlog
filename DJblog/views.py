@@ -13,7 +13,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('/login')
+            return redirect('/DJblog/')
     else:
         form = RegisterForm()
     return render(request, 'registration/sign_up.html', {'form':form})
@@ -27,17 +27,16 @@ def post_list(request):
 
 
 
-def logoutUser(request):
+def logout_User(request):
     logout(request)
     return redirect('/login')
-
-
 
 # class PostList(ListView):
 #     model = Post
 #     template_name = "post_list.html"
 
 
+@login_required(login_url='/login')
 def post_detail(request,post_id):
     post = Post.objects.get(id=post_id)
     post_comments = Comment.objects.filter(post=post)
@@ -53,6 +52,7 @@ def post_detail(request,post_id):
     return render(request,'DJblog/post_detail.html',{'post':post,'post_comments':post_comments,'form':form})
 
 
+@login_required(login_url='/login')
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST,request.FILES)
@@ -66,6 +66,7 @@ def post_new(request):
     return render(request,'DJblog/post_new.html',{'form':form})
 
 
+@login_required(login_url='/login')
 def post_edit(request,post_id):
     data = Post.objects.get(id=post_id)
     if request.method == 'POST':
@@ -74,18 +75,20 @@ def post_edit(request,post_id):
             myform = form.save(commit=False)
             myform.writer = request.user
             myform = form.save()
-            # return redirect('/DJblog/')
+            return redirect(f'/DJblog/{post_id}')
     else:
         form = PostForm(instance=data)
     return render(request,'DJblog/post_edit.html',{'form':form})
 
 
+@login_required(login_url='/login')
 def post_delete(request,post_id):
     post = Post.objects.get(id=post_id)
     post.delete()
     return redirect('/DJblog/')
 
 
+@login_required(login_url='/login')
 def comment_edit(request,comment_id,post_id):
     data = Post.objects.get(id=post_id)
     comment_data = Comment.objects.get(id=comment_id,post=data)
@@ -96,14 +99,15 @@ def comment_edit(request,comment_id,post_id):
             myform.writer = request.user
             myform = form.save()
             form = CommentForm()
-            return redirect ('/DJblog/')
+            return redirect(f'/DJblog/{post_id}')
     else:
         form = CommentForm(instance=comment_data)
     return render(request,'DJblog/post_detail.html',{'form':form})
 
 
-def comment_delete(request,post_id,comment_id):
+@login_required(login_url='/login')
+def comment_delete(request, post_id,comment_id):
     post = Post.objects.get(id=post_id)
     comment = Comment.objects.get(id=comment_id,post=post)
     comment.delete()
-    return redirect('/DJblog/')
+    return redirect(f'/DJblog/{post_id}')
